@@ -1,32 +1,25 @@
 import math
 
 def do_turn(pw):
-    if len(pw.my_fleets()) >= 1: #don't act if there is already a fleet in flight
-        return
-
     if len(pw.my_planets()) == 0: #don't act if none of the planets are ours
         return
 
-    source = pw.my_planets()[0]#send from one of our planets
+    source = pw.my_planets()[0] #send from one of our planets
+    for i in pw.my_planets():
+            if (i.num_ships() > source.num_ships()):
+                source = i
 
     if len(pw.neutral_planets()) >= 1: #send to the first of the neutral planets if there are any
         dest = pw.neutral_planets()[0]
         for i in pw.neutral_planets():
-            if (calculateDistance(i, source) < calculateDistance(dest,source)):
+            if (pw.distance(source, i) < pw.distance(source, dest)):
                 dest = i
     else:
         if len(pw.enemy_planets()) >= 1: #otherwise send to one of the opponent's planets
             dest = pw.enemy_planets()[0]
 
-    num_ships = dest.num_ships() #send half of our ships
+
+    num_ships = source.num_ships()
     pw.debug('Num Ships: ' + str(num_ships))
 
     pw.issue_order(source, dest, num_ships) #execute command to send fleet
-
-
-def calculateDistance(dst, src):
-    xDst = dst.x()
-    yDst = dst.y()
-    xSrc = src.x()
-    ySrc = src.y()
-    return math.sqrt(math.pow(xDst-xSrc, 2) + math.pow(yDst-ySrc, 2))
